@@ -31,7 +31,7 @@ def create_pdf_invoice(number: int, date: str, data: pd.DataFrame) -> FPDF:
             pdf.cell(txt=str(row[key]), w=params[1], h=8, border=1, ln=0)
 
     pdf.ln(8)
-    total_price = sum(data['total_price'])
+    total_price = data['total_price'].sum()
     for key, params in table_structure.items():
         text = total_price if key == 'total_price' else ''
         pdf.cell(txt=str(text), w=params[1], h=8, border=1, ln=0)
@@ -49,10 +49,10 @@ def create_pdf_invoice(number: int, date: str, data: pd.DataFrame) -> FPDF:
 filepaths_list = glob.glob("invoices/*.xlsx")
 
 for filepath in filepaths_list:
-    df = pd.read_excel(filepath, sheet_name="Sheet 1")
     filename = Path(filepath).stem
     invoice_number, invoice_date = filename.split('-')
 
+    df = pd.read_excel(filepath, sheet_name="Sheet 1")
     pdf_invoice = create_pdf_invoice(invoice_number, invoice_date, df)
     pdf_invoice.output(f"invoices/{filename}.pdf")
 
